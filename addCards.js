@@ -1,21 +1,22 @@
-import { ebook } from './ebook.js';
-const EBOOKCONTAINER = document.querySelector("[data-resource='ebook']");
-const LOADMOREBTN = document.querySelector("[data-btn='loadmore']");
+import { EBOOK } from './ebook.js';
+import { CASESTUDIES } from './case-studies.js';
+import { WEBINAR } from './webinar.js';
+import { VIDEO } from './video.js';
 
 class RESOURCESCARD {
-    constructor(ebook, EBOOKCONTAINER, LOADMOREBTN) {
-        this.info = ebook.data;
+    constructor(config) {
+        this.info = config.resource.data;
         this.currentIndex = 0;
-        this.sliceUpto = 4;
-        this.incerementBy = 4;
+        this.sliceUpto = config.cardsToShow;
+        this.incerementBy = config.cardsToShow;
         this.newArrFromInfo = this.info.slice(this.currentIndex, this.sliceUpto);
-        this.container = EBOOKCONTAINER;
-        this.btn = LOADMOREBTN;
+        this.container = config.container;
+        this.btn = config.btn;
         this.card = this.container.querySelector(".reso-card").cloneNode(true);
         this.img = null;
         this.init()
     }
-    
+
     init() {
         this.container.innerHTML = '';
         this.addCard(this.newArrFromInfo, this.card)
@@ -42,28 +43,44 @@ class RESOURCESCARD {
                 clonedCard.querySelector("[data-tagwrp='tagswrp']").appendChild(cloneTag);
             })
             // adding card into conatiner.
-            this.img?this.container.insertBefore(clonedCard, this.img):this.container.appendChild(clonedCard);
+            this.img ? this.container.insertBefore(clonedCard, this.img) : this.container.appendChild(clonedCard);
         });
         this.hideShowMoreBtn(this.sliceUpto, this.btn)
     }
 
     // function to listen to load more click, slice the array then add the cards based in new array.
-    loadMoreCards(btn){
+    loadMoreCards(btn) {
         btn.addEventListener('click', () => {
             this.currentIndex = this.sliceUpto;
             this.sliceUpto += this.incerementBy;
             this.newArrFromInfo = this.info.slice(this.currentIndex, this.sliceUpto);
             this.addCard(this.newArrFromInfo, this.card);
-        })  
+        })
     }
 
     // function to hide and show buttons.
-    hideShowMoreBtn(length, btn){
-        length >= this.info.length?btn.style.display = "none":'';
+    hideShowMoreBtn(length, btn) {
+        length >= this.info.length ? btn.style.display = "none" : '';
     }
 }
 
 
+const CONFIGS = [{
+    resource: EBOOK,
+    container: document.querySelector("[data-resource='ebook']"),
+    btn: document.querySelector("[data-btn='loadMoreEbook']"),
+    cardsToShow: 3,
+}, {
+    resource: CASESTUDIES,
+    container: document.querySelector("[data-resource='case-studies']"),
+    btn: document.querySelector("[data-btn='loadMoreCaseStudies']"),
+    cardsToShow: 1,
+},
+{
+    resource: WEBINAR,
+    container: document.querySelector("[data-resource='webinar']"),
+    btn: document.querySelector("[data-btn='loadMoreWebinar']"),
+    cardsToShow: 2,
+},]
 
-new RESOURCESCARD(ebook, EBOOKCONTAINER, LOADMOREBTN);
-
+CONFIGS.forEach(config => new RESOURCESCARD(config))
