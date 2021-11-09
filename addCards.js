@@ -14,6 +14,9 @@ class RESOURCESCARD {
         this.btn = config.btn;
         this.card = this.container.querySelector(".reso-card").cloneNode(true);
         this.img = null;
+        this.modal = config.modal;
+        this.video = config.video;
+        this.closeBtn = config.closeBtn;
         this.init()
     }
 
@@ -35,7 +38,13 @@ class RESOURCESCARD {
             clonedCard.querySelector("[data-img='cardimg']").src = info.image.url;
             clonedCard.querySelector("[data-title='cardtitle']").innerHTML = info.name;
             clonedCard.querySelector("[data-desc='carddesc']").innerHTML = info.description;
-            clonedCard.querySelector("[data-link='cardlink']").href = info.slug;
+
+            // code to trigger video modal.
+            (info.video)?clonedCard.querySelector("[data-img='cardimg']").setAttribute("data-src", info.video):"";
+            (info.video)?clonedCard.querySelector("[data-img='cardimg']").addEventListener('click', this.openModalAddvideo.bind(this)):"";
+            (info.video)?clonedCard.querySelector("[data-src='videoSrc']").setAttribute("data-src", info.video):"";
+            !(this.modal && this.video)?clonedCard.querySelector("[data-link='cardlink']").href = info.slug:clonedCard.querySelector("[data-link='cardlink']").addEventListener('click', this.openModalAddvideo.bind(this));
+            
             clonedCard.querySelector("[data-tagwrp='tagswrp']").innerHTML = '';
             info.tags.forEach(tag => {
                 let cloneTag = cardTag.cloneNode(true);
@@ -62,6 +71,15 @@ class RESOURCESCARD {
     hideShowMoreBtn(length, btn) {
         length >= this.info.length ? btn.style.display = "none" : '';
     }
+
+    // open modal and append video link.
+    openModalAddvideo(ev){
+        this.video.src = ev.currentTarget.getAttribute("data-src");
+        this.modal.style.display = "flex";
+        this.closeBtn.addEventListener('click',()=>{
+            this.video.src = ""
+        });
+    }
 }
 
 
@@ -81,6 +99,15 @@ const CONFIGS = [{
     container: document.querySelector("[data-resource='webinar']"),
     btn: document.querySelector("[data-btn='loadMoreWebinar']"),
     cardsToShow: 2,
+},
+{
+    resource: VIDEO,
+    container: document.querySelector("[data-resource='video']"),
+    btn: document.querySelector("[data-btn='loadMoreVideo']"),
+    cardsToShow: 2,
+    modal: document.querySelector(".reso-video-popup-wrapper"),
+    video: document.querySelector("[data-video='video']"),
+    closeBtn:document.querySelector(".reso-popup-close-btn"),
 },]
 
 CONFIGS.forEach(config => new RESOURCESCARD(config))
