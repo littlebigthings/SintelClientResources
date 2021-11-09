@@ -13,7 +13,7 @@ class RESOURCESCARD {
         this.container = config.container;
         this.btn = config.btn;
         this.card = this.container.querySelector(".reso-card").cloneNode(true);
-        this.img = null;
+        this.img = (this.container.querySelector("[data-img='signup']"))?this.container.querySelector("[data-img='signup']").cloneNode():null;
         this.modal = config.modal;
         this.video = config.video;
         this.closeBtn = config.closeBtn;
@@ -51,9 +51,13 @@ class RESOURCESCARD {
                 cloneTag.innerHTML = tag.name;
                 clonedCard.querySelector("[data-tagwrp='tagswrp']").appendChild(cloneTag);
             })
-            // adding card into conatiner.
+            // adding card into contqiner.
+            if (this.container.childElementCount == 0 && this.img) {
+                this.container.appendChild(this.img);
+            }
             this.img ? this.container.insertBefore(clonedCard, this.img) : this.container.appendChild(clonedCard);
         });
+        this.scrollToSection(this.container)
         this.hideShowMoreBtn(this.sliceUpto, this.btn)
     }
 
@@ -74,10 +78,19 @@ class RESOURCESCARD {
 
     // open modal and append video link.
     openModalAddvideo(ev){
-        this.video.src = ev.currentTarget.getAttribute("data-src");
+        this.video.innerHTML = ev.currentTarget.getAttribute("data-src");
         this.modal.style.display = "flex";
         this.closeBtn.addEventListener('click',()=>{
             this.video.src = ""
+        });
+    }
+
+    // function to scroll to top of the section when user clicks in show more\
+    scrollToSection(section){
+        let elDistanceToTop = window.pageYOffset + section.getBoundingClientRect().top;
+        window.scrollTo({
+            top: elDistanceToTop - 200,
+            behavior: 'smooth'
         });
     }
 }
@@ -87,7 +100,7 @@ const CONFIGS = [{
     resource: EBOOK,
     container: document.querySelector("[data-resource='ebook']"),
     btn: document.querySelector("[data-btn='loadMoreEbook']"),
-    cardsToShow: 3,
+    cardsToShow: 1,
 }, {
     resource: CASESTUDIES,
     container: document.querySelector("[data-resource='case-studies']"),
