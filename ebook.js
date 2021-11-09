@@ -1,4 +1,4 @@
-export const res = {
+export const EBOOK = {
   success: true,
   data: [
     {
@@ -263,8 +263,8 @@ export const res = {
         alt: null,
       },
       slug: "sales-intelligence-a-guide-to-smart-selling",
-      "updated-on": "2021-10-29T08:50:36.889Z",
       "updated-by": "Person_61152faefe8d4da3f899ac99",
+      "updated-on": "2021-10-29T08:50:36.889Z",
       "created-on": "2021-10-29T08:36:37.340Z",
       "created-by": "Person_61152faefe8d4da3f899ac99",
       "published-on": "2021-11-03T07:01:50.001Z",

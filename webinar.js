@@ -1,4 +1,4 @@
-export const data = {
+export const WEBINAR = {
   success: true,
   data: [
     {
@@ -9,7 +9,7 @@ export const data = {
       "topics-we-covered":
         "<ul><li>Like demographics or firmographics, technographics is a market</li><li>But what's all the fuss about, and why should you know about</li><li>Read this in-depth guide to learn more about how technographics can</li></ul><p>Well, this ebook has been built with the intention of changing that for once and for all. Learn all about how buying intent works, and the different methods using which you can determine buying intent for your prospects and target accounts in this ebook</p>",
       name: "Rambling Sessions with Anupreet Singh: Episode #9",
-      images: {
+      image: {
         fileId: "617f8bec99e4a1961ba5aed7",
         url: "https://uploads-ssl.webflow.com/617f8bec99e4a18831a5ace7/617f8bec99e4a1961ba5aed7_617ba5af55f22db6f7da7a8e_web-2.png",
         alt: null,
@@ -121,7 +121,7 @@ export const data = {
         "<ul><li>Like demographics or firmographics, technographics is a market</li><li>But what's all the fuss about, and why should you know about</li><li>Read this in-depth guide to learn more about how technographics can</li></ul><p>Well, this ebook has been built with the intention of changing that for once and for all. Learn all about how buying intent works, and the different methods using which you can determine buying intent for your prospects and target accounts in this ebook</p>",
       name: "Rambling Sessions with Anupreet Singh: Episode #8",
       slug: "rambling-sessions-with-anupreet-singh-episode-8",
-      images: {
+      image: {
         fileId: "617f8bec99e4a13925a5aed6",
         url: "https://uploads-ssl.webflow.com/617f8bec99e4a18831a5ace7/617f8bec99e4a13925a5aed6_617ba58f40bcc2a539593b68_web-1.png",
         alt: null,
@@ -146,7 +146,7 @@ export const data = {
         "<ul><li>Like demographics or firmographics, technographics is a market</li><li>But what's all the fuss about, and why should you know about</li><li>Read this in-depth guide to learn more about how technographics can</li></ul><p>Well, this ebook has been built with the intention of changing that for once and for all. Learn all about how buying intent works, and the different methods using which you can determine buying intent for your prospects and target accounts in this ebook</p>",
       name: "Rambling Sessions with Anupreet Singh: Episode #10",
       slug: "rambling-sessions-with-anupreet-singh-episode-10",
-      images: {
+      image: {
         fileId: "617f8bec99e4a161dea5aed5",
         url: "https://uploads-ssl.webflow.com/617f8bec99e4a18831a5ace7/617f8bec99e4a161dea5aed5_617ba5d130e0827ca9b7ce8a_web-3.png",
         alt: null,

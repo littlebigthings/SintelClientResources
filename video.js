@@ -1,4 +1,4 @@
-export const data = {
+export const VIDEO = {
   success: true,
   data: [
     {
@@ -13,6 +13,7 @@ export const data = {
         url: "https://uploads-ssl.webflow.com/617f8bec99e4a18831a5ace7/617f8bec99e4a16a1aa5aeff_617ba444e052198fea11f71d_video-2.png",
         alt: null,
       },
+      video:`<iframe width="256" height="100" src="https://www.youtube.com/embed/kgEbMCQyXTc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
       "updated-on": "2021-10-29T08:52:38.452Z",
       "updated-by": "Person_61152faefe8d4da3f899ac99",
       "created-on": "2021-10-29T08:47:46.665Z",
@@ -135,6 +136,7 @@ export const data = {
         url: "https://uploads-ssl.webflow.com/617f8bec99e4a18831a5ace7/617f8bec99e4a1e46fa5aeee_617ba4e1d3218f58976ecedc_video-4.png",
         alt: null,
       },
+      video:`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/XI67Tp5K8zY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
       slug: "the-foundations-of-a-successful-inside-sales-team",
       "updated-on": "2021-10-29T08:52:53.650Z",
       "updated-by": "Person_61152faefe8d4da3f899ac99",
@@ -272,6 +274,7 @@ export const data = {
         url: "https://uploads-ssl.webflow.com/617f8bec99e4a18831a5ace7/617f8bec99e4a1a751a5aeda_617ba4ba7c9109c9fcecb7cd_video-3.png",
         alt: null,
       },
+      video:`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/je_Z9_1Wzzs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
       slug: "mistakes-and-learnings-from-the-0-to-1m-journey",
       "updated-on": "2021-10-29T08:53:04.007Z",
       "updated-by": "Person_61152faefe8d4da3f899ac99",
@@ -395,6 +398,7 @@ export const data = {
         url: "https://uploads-ssl.webflow.com/617f8bec99e4a18831a5ace7/617f8bec99e4a1cb1da5aed9_617ba5111a4c4c072a1938f4_video-5.png",
         alt: null,
       },
+      video:`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/w5y81LxSmE8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
       slug: "how-to-sell-to-the-vp-of-sales-from-the-horses-mo",
       "updated-on": "2021-10-29T08:53:13.633Z",
       "updated-by": "Person_61152faefe8d4da3f899ac99",
@@ -518,6 +522,7 @@ export const data = {
         url: "https://uploads-ssl.webflow.com/617f8bec99e4a18831a5ace7/617f8bec99e4a10d82a5aed8_617ba3e90055cf81547039fd_video-1.png",
         alt: null,
       },
+      video:`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/s8CFBzy0Ddw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
       slug: "how-to-scale-a-b2b-saas-company-and-sell-it",
       "updated-on": "2021-10-29T08:53:25.406Z",
       "updated-by": "Person_61152faefe8d4da3f899ac99",

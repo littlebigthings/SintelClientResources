@@ -1,4 +1,4 @@
-export const data = {
+export const CASESTUDIES = {
   success: true,
   data: [
     {

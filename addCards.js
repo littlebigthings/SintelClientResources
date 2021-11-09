@@ -13,10 +13,11 @@ class RESOURCESCARD {
         this.container = config.container;
         this.btn = config.btn;
         this.card = this.container.querySelector(".reso-card").cloneNode(true);
-        this.img = (this.container.querySelector("[data-img='signup']"))?this.container.querySelector("[data-img='signup']").cloneNode():null;
+        this.img = (this.container.querySelector("[data-img='signup']")) ? this.container.querySelector("[data-img='signup']").cloneNode() : null;
         this.modal = config.modal;
         this.video = config.video;
         this.closeBtn = config.closeBtn;
+        this.imgIndex = config.bannerImgIndex;
         this.init()
     }
 
@@ -40,22 +41,22 @@ class RESOURCESCARD {
             clonedCard.querySelector("[data-desc='carddesc']").innerHTML = info.description;
 
             // code to trigger video modal.
-            (info.video)?clonedCard.querySelector("[data-img='cardimg']").setAttribute("data-src", info.video):"";
-            (info.video)?clonedCard.querySelector("[data-img='cardimg']").addEventListener('click', this.openModalAddvideo.bind(this)):"";
-            (info.video)?clonedCard.querySelector("[data-src='videoSrc']").setAttribute("data-src", info.video):"";
-            !(this.modal && this.video)?clonedCard.querySelector("[data-link='cardlink']").href = info.slug:clonedCard.querySelector("[data-link='cardlink']").addEventListener('click', this.openModalAddvideo.bind(this));
-            
+            (info.video) ? clonedCard.querySelector("[data-img='cardimg']").setAttribute("data-src", info.video) : "";
+            (info.video) ? clonedCard.querySelector("[data-img='cardimg']").addEventListener('click', this.openModalAddvideo.bind(this)) : "";
+            (info.video) ? clonedCard.querySelector("[data-src='videoSrc']").setAttribute("data-src", info.video) : "";
+            !(this.modal && this.video) ? clonedCard.querySelector("[data-link='cardlink']").href = info.slug : clonedCard.querySelector("[data-link='cardlink']").addEventListener('click', this.openModalAddvideo.bind(this));
+
             clonedCard.querySelector("[data-tagwrp='tagswrp']").innerHTML = '';
             info.tags.forEach(tag => {
                 let cloneTag = cardTag.cloneNode(true);
                 cloneTag.innerHTML = tag.name;
                 clonedCard.querySelector("[data-tagwrp='tagswrp']").appendChild(cloneTag);
             })
-            // adding card into contqiner.
-            if (this.container.childElementCount == 0 && this.img) {
+            // adding card into container.
+            if (this.container.childElementCount == this.imgIndex && this.img) {
                 this.container.appendChild(this.img);
             }
-            this.img ? this.container.insertBefore(clonedCard, this.img) : this.container.appendChild(clonedCard);
+            (this.container.childElementCount >= this.imgIndex) ? this.container.insertBefore(clonedCard, this.img) : this.container.appendChild(clonedCard);
         });
         this.scrollToSection(this.container)
         this.hideShowMoreBtn(this.sliceUpto, this.btn)
@@ -77,16 +78,16 @@ class RESOURCESCARD {
     }
 
     // open modal and append video link.
-    openModalAddvideo(ev){
+    openModalAddvideo(ev) {
         this.video.innerHTML = ev.currentTarget.getAttribute("data-src");
         this.modal.style.display = "flex";
-        this.closeBtn.addEventListener('click',()=>{
+        this.closeBtn.addEventListener('click', () => {
             this.video.src = ""
         });
     }
 
     // function to scroll to top of the section when user clicks in show more\
-    scrollToSection(section){
+    scrollToSection(section) {
         let elDistanceToTop = window.pageYOffset + section.getBoundingClientRect().top;
         window.scrollTo({
             top: elDistanceToTop - 200,
@@ -101,6 +102,7 @@ const CONFIGS = [{
     container: document.querySelector("[data-resource='ebook']"),
     btn: document.querySelector("[data-btn='loadMoreEbook']"),
     cardsToShow: 1,
+    bannerImgIndex: 3,
 }, {
     resource: CASESTUDIES,
     container: document.querySelector("[data-resource='case-studies']"),
@@ -120,7 +122,7 @@ const CONFIGS = [{
     cardsToShow: 2,
     modal: document.querySelector(".reso-video-popup-wrapper"),
     video: document.querySelector("[data-video='video']"),
-    closeBtn:document.querySelector(".reso-popup-close-btn"),
+    closeBtn: document.querySelector(".reso-popup-close-btn"),
 },]
 
 CONFIGS.forEach(config => new RESOURCESCARD(config))
