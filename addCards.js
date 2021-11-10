@@ -39,11 +39,10 @@ class RESOURCESCARD {
             clonedCard.querySelector("[data-img='cardimg']").src = info.image.url;
             clonedCard.querySelector("[data-title='cardtitle']").innerHTML = info.name;
             clonedCard.querySelector("[data-desc='carddesc']").innerHTML = info.description;
-
             // code to trigger video modal.
-            (info.video) ? clonedCard.querySelector("[data-img='cardimg']").setAttribute("data-src", info.video) : "";
+            (info.video) ? clonedCard.querySelector("[data-img='cardimg']").setAttribute("data-src", this.filterSrc(info.video)) : "";
             (info.video) ? clonedCard.querySelector("[data-img='cardimg']").addEventListener('click', this.openModalAddvideo.bind(this)) : "";
-            (info.video) ? clonedCard.querySelector("[data-src='videoSrc']").setAttribute("data-src", info.video) : "";
+            (info.video) ? clonedCard.querySelector("[data-src='videoSrc']").setAttribute("data-src", this.filterSrc(info.video)) : "";
             !(this.modal && this.video) ? clonedCard.querySelector("[data-link='cardlink']").href = info.slug : clonedCard.querySelector("[data-link='cardlink']").addEventListener('click', this.openModalAddvideo.bind(this));
 
             clonedCard.querySelector("[data-tagwrp='tagswrp']").innerHTML = '';
@@ -79,7 +78,7 @@ class RESOURCESCARD {
 
     // open modal and append video link.
     openModalAddvideo(ev) {
-        this.video.innerHTML = ev.currentTarget.getAttribute("data-src");
+        this.video.src = ev.currentTarget.getAttribute("data-src");
         this.modal.style.display = "flex";
         this.closeBtn.addEventListener('click', () => {
             this.video.src = ""
@@ -93,6 +92,13 @@ class RESOURCESCARD {
             top: elDistanceToTop - 200,
             behavior: 'smooth'
         });
+    }
+
+    // fucntion to filter out src from video string
+    filterSrc(str) {
+        let re = /<iframe[^>]+src="([^">]+)/g
+        let results = re.exec(str);
+        return results[1];
     }
 }
 
