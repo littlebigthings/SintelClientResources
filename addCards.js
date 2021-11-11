@@ -6,10 +6,12 @@ import { VIDEO } from './video.js';
 class RESOURCESCARD {
     constructor(config) {
         this.info = config.resource.data;
+        this.cardsToShow = config.cardsToShow;
         this.currentIndex = 0;
         this.sliceUpto = config.cardsToShow;
         this.incerementBy = config.cardsToShow;
         this.newArrFromInfo = this.info.slice(this.currentIndex, this.sliceUpto);
+        this.clonedData = [];
         this.container = config.container;
         this.btn = config.btn;
         this.card = this.container.querySelector(".reso-card").cloneNode(true);
@@ -31,10 +33,24 @@ class RESOURCESCARD {
         this.addCard(cardsArr)
     }
 
+    // filter the cards using tags and resources.
     filterCards(tags, checkboxs) {
         // return cards arr -> render cards.
-        console.log(tags, checkboxs)
-        // this.info.filter()
+        const CARDARR = [];
+        this.info.forEach(data => {
+            data.resources.forEach(res => {
+                (checkboxs.includes(res.slug) && !(CARDARR.includes(data)) ? CARDARR.push(data) : false)
+            })
+            data.tags.forEach(tag => {
+                (tags.includes(tag.slug) && !(CARDARR.includes(data))? CARDARR.push(data) : false)
+            })
+        });
+        this.clonedData = [...CARDARR];
+        this.newArrFromInfo = [];
+        this.currentIndex = 0;
+        this.sliceUpto = this.incerementBy;
+        // console.log(this.clonedData)
+        this.renderCards(this.clonedData)
     }
 
     // function to loop through the data, clone card, change data of the cloned card, add them into DOM.
@@ -74,10 +90,13 @@ class RESOURCESCARD {
     // function to listen to load more click, slice the array then add the cards based in new array.
     loadMoreCards(btn) {
         btn.addEventListener('click', () => {
+            this.newArrFromInfo = [...this.newArrFromInfo,...this.clonedData.slice(this.currentIndex, this.sliceUpto)];
             this.currentIndex = this.sliceUpto;
             this.sliceUpto += this.incerementBy;
-            this.newArrFromInfo = this.info.slice(this.currentIndex, this.sliceUpto);
-            this.addCard(this.newArrFromInfo, this.card);
+            console.log(this.currentIndex, this.sliceUpto, this.clonedData);
+            // console.log(this.newArrFromInfo)
+            // this.addCard(this.newArrFromInfo, this.card);
+            this.renderCards(this.newArrFromInfo, this.card)
         })
     }
 
@@ -157,6 +176,7 @@ class FILTERRESOURCES {
         this.init();
     }
 
+    // send resources to add cards into DOM.
     init() {
         this.resourcesObj = this.resourceArr.map(resourceObj => new RESOURCESCARD(resourceObj, { checkboxArr: this.checkboxArr, tagsArr: this.tagsArr }));
         this.filterListener()
@@ -183,10 +203,10 @@ class FILTERRESOURCES {
                 let data = e.currentTarget;
                 if (!data.classList.contains("active")) {
                     data.classList.add("active");
-                    this.tagsArr.push(data.innerHTML);
+                    this.tagsArr.push(data.dataset.value);
                 }
                 else {
-                    let indx = this.tagsArr.indexOf(data.dataset.name);
+                    let indx = this.tagsArr.indexOf(data.dataset.value);
                     data.classList.remove("active");
                     this.tagsArr.splice(indx, 1);
                 }
@@ -194,10 +214,10 @@ class FILTERRESOURCES {
         });
 
         this.applyBtn.addEventListener("click", () => {
-            (this.checkboxArr.length != 0 || this.tagsArr.length != 0)?this.resourcesObj.forEach(resObj => {
+            (this.checkboxArr.length != 0 || this.tagsArr.length != 0) ? this.resourcesObj.forEach(resObj => {
                 resObj.filterCards(this.tagsArr, this.checkboxArr)
-            }):"";
-            
+            }) : "";
+
         })
     }
 }
