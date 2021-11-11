@@ -22,17 +22,27 @@ class RESOURCESCARD {
     }
 
     init() {
-        this.container.innerHTML = '';
-        this.addCard(this.newArrFromInfo, this.card)
+        this.renderCards(this.newArrFromInfo);
         this.loadMoreCards(this.btn);
+    }
+    // function to filter cards.
+    renderCards(cardsArr) {
+        this.container.innerHTML = '';
+        this.addCard(cardsArr)
+    }
+
+    filterCards(tags, checkboxs) {
+        // return cards arr -> render cards.
+        console.log(tags, checkboxs)
+        // this.info.filter()
     }
 
     // function to loop through the data, clone card, change data of the cloned card, add them into DOM.
-    addCard(data, card) {
+    addCard(data) {
         // looping data.
         data.forEach(info => {
             // cloning card.
-            let clonedCard = card.cloneNode(true);
+            let clonedCard = this.card.cloneNode(true);
             let cardTag = clonedCard.querySelector("[data-tagwrp='tagswrp']").querySelector("[data-tag='cardtag']").cloneNode();
             // changing the data of cloned card.
             clonedCard.querySelector("[data-img='cardimg']").removeAttribute("srcset");
@@ -103,7 +113,7 @@ class RESOURCESCARD {
 }
 
 
-const CONFIGS = [{
+const RESOURCES = [{
     resource: EBOOK,
     container: document.querySelector("[data-resource='ebook']"),
     btn: document.querySelector("[data-btn='loadMoreEbook']"),
@@ -131,4 +141,65 @@ const CONFIGS = [{
     closeBtn: document.querySelector(".reso-popup-close-btn"),
 },]
 
-CONFIGS.forEach(config => new RESOURCESCARD(config))
+
+
+/* code for filter starts from here*/
+
+class FILTERRESOURCES {
+    constructor(resource) {
+        this.resourcesCheckBox = document.querySelectorAll("input[type='checkbox']");
+        this.tagsContainer = document.querySelectorAll("[data-input='tags']");
+        this.applyBtn = document.querySelector(".apply-button");
+        this.checkboxArr = [];
+        this.tagsArr = [];
+        this.resourceArr = resource;
+        this.resourcesObj = null;
+        this.init();
+    }
+
+    init() {
+        this.resourcesObj = this.resourceArr.map(resourceObj => new RESOURCESCARD(resourceObj, { checkboxArr: this.checkboxArr, tagsArr: this.tagsArr }));
+        this.filterListener()
+    }
+
+    // function add listener to the checkbox, tags and apply btn -> data to class to filter the cards.
+    filterListener() {
+        this.resourcesCheckBox.forEach(resource => {
+            resource.addEventListener("change", (e) => {
+                // if checked add value otherwise remove;
+                let data = e.currentTarget;
+                if (data.checked && !(this.checkboxArr.includes(data.dataset.name))) {
+                    this.checkboxArr.push(data.dataset.name);
+                }
+                else {
+                    let indx = this.checkboxArr.indexOf(data.dataset.name);
+                    this.checkboxArr.splice(indx, 1);
+                }
+            })
+        });
+
+        this.tagsContainer.forEach(tag => {
+            tag.addEventListener("click", (e) => {
+                let data = e.currentTarget;
+                if (!data.classList.contains("active")) {
+                    data.classList.add("active");
+                    this.tagsArr.push(data.innerHTML);
+                }
+                else {
+                    let indx = this.tagsArr.indexOf(data.dataset.name);
+                    data.classList.remove("active");
+                    this.tagsArr.splice(indx, 1);
+                }
+            })
+        });
+
+        this.applyBtn.addEventListener("click", () => {
+            (this.checkboxArr.length != 0 || this.tagsArr.length != 0)?this.resourcesObj.forEach(resObj => {
+                resObj.filterCards(this.tagsArr, this.checkboxArr)
+            }):"";
+            
+        })
+    }
+}
+
+new FILTERRESOURCES(RESOURCES);
