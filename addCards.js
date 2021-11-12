@@ -16,12 +16,13 @@ class RESOURCESCARD {
     this.btn = config.btn;
     this.card = this.container.querySelector(".reso-card").cloneNode(true);
     this.img = this.container.querySelector("[data-img='signup']")
-      ? this.container.querySelector("[data-img='signup']").cloneNode()
+      ? this.container.querySelector("[data-img='signup']").cloneNode(true)
       : null;
     this.modal = config.modal;
     this.video = config.video;
     this.closeBtn = config.closeBtn;
     this.imgIndex = config.bannerImgIndex;
+    this.showBanner = true;
     this.init();
   }
 
@@ -34,6 +35,7 @@ class RESOURCESCARD {
   activateEventListeners() {
     this.btn.addEventListener("click", () => {
       this.loadMoreFunc();
+      this.scrollToSection(this.container);
     });
   }
 
@@ -43,7 +45,8 @@ class RESOURCESCARD {
   }
 
   // filter the cards using tags and resources.
-  filterCards(tags, checkboxs) {
+  filterCards(tags, checkboxs, showBanner) {
+    this.showBanner = showBanner;
     this.container.innerHTML = "";
     // return cards arr -> render cards.
     const CARDARR = [];
@@ -61,7 +64,6 @@ class RESOURCESCARD {
           : false;
       });
 
-      // console.log({ foundResource, foundTags });
 
       if (foundResource || foundTags) {
         return true;
@@ -125,21 +127,17 @@ class RESOURCESCARD {
           .querySelector("[data-tagwrp='tagswrp']")
           .appendChild(cloneTag);
       });
+      this.container.appendChild(clonedCard);
       // adding card into container.
-      if (this.container.childElementCount == this.imgIndex && this.img) {
-        this.container.appendChild(this.img);
+      if (this.container.childElementCount == this.imgIndex && this.img && this.showBanner) {
+        clonedCard.insertAdjacentElement("afterEnd", this.img);;
       }
-      this.container.childElementCount >= this.imgIndex
-        ? this.container.insertBefore(clonedCard, this.img)
-        : this.container.appendChild(clonedCard);
     });
-    this.scrollToSection(this.container);
     this.hideShowMoreBtn(this.currentIndex, this.btn);
   }
 
   loadMoreFunc() {
     this.newArrFromInfo = [
-      // ...this.newArrFromInfo,
       ...(this.clonedData.length > 0
         ? this.clonedData.slice(this.currentIndex, this.sliceUpto)
         : this.info.slice(this.currentIndex, this.sliceUpto)),
@@ -191,14 +189,15 @@ const RESOURCES = [
     resource: EBOOK,
     container: document.querySelector("[data-resource='ebook']"),
     btn: document.querySelector("[data-btn='loadMoreEbook']"),
-    cardsToShow: 2,
-    bannerImgIndex: 3,
+    cardsToShow: 1,
+    bannerImgIndex: 4,
   },
   {
     resource: CASESTUDIES,
     container: document.querySelector("[data-resource='case-studies']"),
     btn: document.querySelector("[data-btn='loadMoreCaseStudies']"),
     cardsToShow: 2,
+    bannerImgIndex: 3,
   },
   {
     resource: WEBINAR,
@@ -228,6 +227,9 @@ class FILTERRESOURCES {
     this.applyBtn = document.querySelector(".apply-button");
     this.resetResourceBtn = document.querySelector("[data-btn='clearResource']");
     this.resetTagBtn = document.querySelector("[data-btn='clearTag']");
+    this.topCategory = document.querySelectorAll(".resources-category-title");
+    this.resourceCardContainer = [];
+    this.filterBtn = document.querySelector(".filter-btn");
     this.checkboxArr = [];
     this.tagsArr = [];
     this.resourceArr = resource;
@@ -277,30 +279,72 @@ class FILTERRESOURCES {
     });
 
     this.applyBtn.addEventListener("click", () => {
-      this.checkboxArr.length != 0 || this.tagsArr.length != 0
-        ? this.resourcesObj.forEach((resObj) => {
-          resObj.filterCards(this.tagsArr, this.checkboxArr);
-        })
-        : "";
+      this.filterBtn.click();
+      this.tagsArr.length != 0 || this.checkboxArr.length != 0?this.showBanner = false : this.showBanner = true;
+      this.resourcesObj.forEach((resObj) => {
+        resObj.filterCards(this.tagsArr, this.checkboxArr, this.showBanner);
+      });
     });
-    
+
     // listener to reset checkebox.
     this.resetResourceBtn.addEventListener("click", () => {
-        this.checkboxArr = [];
-        this.resourcesCheckBox.forEach(res => {
-            if (res.checked) {
-                res.checked = false;
-                res.previousElementSibling.classList.remove("w--redirected-checked");
-            }
-        })
+      this.checkboxArr = [];
+      this.resourcesCheckBox.forEach(res => {
+        if (res.checked) {
+          res.checked = false;
+          res.previousElementSibling.classList.remove("w--redirected-checked");
+        }
+      })
 
     })
 
     // listener to reset tags.
     this.resetTagBtn.addEventListener('click', () => {
-        this.tagsArr = [];
-        this.tagsContainer.forEach(tag => tag.classList.remove("active"))
+      this.tagsArr = [];
+      this.tagsContainer.forEach(tag => tag.classList.remove("active"))
     })
+
+    // top category on click listener.
+    this.resourceArr.forEach(reso => {
+      this.observeScroll(reso.container.parentElement);
+      this.resourceCardContainer.push(reso.container.parentElement.dataset.container);
+    })
+
+    this.topCategory.forEach(category => {
+      category.addEventListener('click', (e) => {
+        let name = e.currentTarget.dataset.name;
+        let section;
+        this.resourceCardContainer.includes(name) ? section = document.querySelector(`[data-container='${name}']`) : section = document.querySelector("[data-container='ebook']");
+        section ? this.scrollToSection(section) : "";
+      })
+    })
+  }
+
+  // function to scroll to top of the section when user clicks in show more\
+  scrollToSection(section) {
+    let elDistanceToTop =
+      window.pageYOffset + section.getBoundingClientRect().top;
+    window.scrollTo({
+      top: elDistanceToTop - 100,
+      behavior: "smooth",
+    });
+  }
+
+  removeActive(name) {
+    this.topCategory.forEach(category => {
+      !(category.classList.contains("active")) && category.dataset.name == name.dataset.container ? category.classList.add("active") : category.classList.remove("active");
+    })
+  }
+
+  // function for observing scroll.
+  observeScroll(wrapper) {
+    this.observer = new IntersectionObserver((wrapper) => {
+      if (wrapper[0]['isIntersecting'] == true) {
+        let elID = wrapper[0].target;
+        this.removeActive(elID);
+      }
+    }, { root: null, threshold: 0, rootMargin: '-100px' });
+    this.observer.observe(wrapper);
   }
 }
 
