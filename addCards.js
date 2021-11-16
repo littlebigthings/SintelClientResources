@@ -113,8 +113,8 @@ class RESOURCESCARD {
           .querySelector("[data-src='videoSrc']")
           .setAttribute("data-src", this.filterSrc(info.video))
         : "";
-      !(this.modal && this.video)
-        ? (clonedCard.querySelector("[data-link='cardlink']").href = info.slug)
+      !(info.video)
+        ? (clonedCard.querySelector("[data-link='cardlink']").href = `https://slintel-style-guide-bcd18fe5ee6c2c8b7e4.webflow.io/ebook-collection/${info.slug}`)
         : clonedCard
           .querySelector("[data-link='cardlink']")
           .addEventListener("click", this.openModalAddvideo.bind(this));
@@ -130,7 +130,9 @@ class RESOURCESCARD {
       this.container.appendChild(clonedCard);
       // adding card into container.
       if (this.container.childElementCount == this.imgIndex && this.img && this.showBanner) {
-        clonedCard.insertAdjacentElement("afterEnd", this.img);;
+        clonedCard.insertAdjacentElement("afterEnd", this.img);
+        // below function will connect video modal into the banner image.
+        this.addModalToBanner();
       }
     });
     this.hideShowMoreBtn(this.currentIndex, this.btn);
@@ -182,6 +184,22 @@ class RESOURCESCARD {
     let results = re.exec(str);
     return results[1];
   }
+
+  // function to connect video modal into banner.
+  addModalToBanner() {
+    let imgEle = this.img.querySelector("[data-img='cardimg']")
+    let src = imgEle?imgEle.getAttribute("data-src"):null;
+    let linkEle = this.img.querySelector("[data-link='cardlink']");
+    let downloadLink = linkEle?linkEle.getAttribute("data-src"):null;
+    if (src && downloadLink) {
+      let videoLink = this.filterSrc(src);
+      imgEle.setAttribute("data-src", videoLink)
+      linkEle.setAttribute("data-src", videoLink)
+      imgEle.addEventListener("click", this.openModalAddvideo.bind(this));
+      linkEle.addEventListener("click", this.openModalAddvideo.bind(this));
+
+    }
+  }
 }
 
 const RESOURCES = [
@@ -198,6 +216,9 @@ const RESOURCES = [
     btn: document.querySelector("[data-btn='loadMoreCaseStudies']"),
     cardsToShow: 2,
     bannerImgIndex: 3,
+    modal: document.querySelector(".reso-video-popup-wrapper"),
+    video: document.querySelector("[data-video='video']"),
+    closeBtn: document.querySelector(".reso-popup-close-btn"),
   },
   {
     resource: WEBINAR,
@@ -234,6 +255,7 @@ class FILTERRESOURCES {
     this.tagsArr = [];
     this.resourceArr = resource;
     this.resourcesObj = null;
+    this.allResourcesBtn = document.querySelector("[data-name='allResource']");
     this.init();
   }
 
@@ -247,6 +269,7 @@ class FILTERRESOURCES {
         })
     );
     this.filterListener();
+    this.observeScroll(this.allResourcesBtn);
   }
 
   // function add listener to the checkbox, tags and apply btn -> data to class to filter the cards.
@@ -280,7 +303,7 @@ class FILTERRESOURCES {
 
     this.applyBtn.addEventListener("click", () => {
       this.filterBtn.click();
-      this.tagsArr.length != 0 || this.checkboxArr.length != 0?this.showBanner = false : this.showBanner = true;
+      this.tagsArr.length != 0 || this.checkboxArr.length != 0 ? this.showBanner = false : this.showBanner = true;
       this.resourcesObj.forEach((resObj) => {
         resObj.filterCards(this.tagsArr, this.checkboxArr, this.showBanner);
       });
@@ -332,7 +355,7 @@ class FILTERRESOURCES {
 
   removeActive(name) {
     this.topCategory.forEach(category => {
-      !(category.classList.contains("active")) && category.dataset.name == name.dataset.container ? category.classList.add("active") : category.classList.remove("active");
+      !(category.classList.contains("active")) && category.dataset.name == name.dataset.container || category.dataset.name == name.dataset.name ? category.classList.add("active") : category.classList.remove("active");
     })
   }
 
