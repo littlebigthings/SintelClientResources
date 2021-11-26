@@ -1,16 +1,14 @@
-import { EBOOK } from "./ebook.js";
-import { CASESTUDIES } from "./case-studies.js";
-import { WEBINAR } from "./webinar.js";
-import { VIDEO } from "./video.js";
-
 class RESOURCESCARD {
   constructor(config) {
-    this.info = config.resource.data;
+    this.info = [];
+    this.collectionId = config.collectionId;
+    this.pageSlug = (config.slug != undefined) && config.slug;
+    this.cardstoLoad = 20;
+    this.cardstoLoadOffset = 0;
+    this.incerementBy = config.cardsToShow;
     this.cardsToShow = config.cardsToShow;
     this.currentIndex = 0;
     this.sliceUpto = config.cardsToShow;
-    this.incerementBy = config.cardsToShow;
-    this.newArrFromInfo = this.info.slice(this.currentIndex, this.sliceUpto);
     this.clonedData = [];
     this.container = config.container;
     this.btn = config.btn;
@@ -28,20 +26,78 @@ class RESOURCESCARD {
 
   init() {
     this.container.innerHTML = "";
-    this.loadMoreFunc();
-    this.activateEventListeners();
+    this.loadDataFromApi();
   }
+
+  // a method that takes data from the cdn and add it into the empty array -> loadmore -> listeners.
+  loadDataFromApi() {
+    console.log("initial call")
+    let promise = this.callApi();
+    promise.then((res) => {
+      if(res == 'error'){
+        setTimeout(() => this.loadDataFromApi(),8000);
+      }else{
+        this.loadMoreFunc();
+        this.activateEventListeners();
+        this.loadMoreData();
+      }
+    }).catch(() => {
+      setTimeout(() => this.loadDataFromApi(),8000);
+    })
+  }
+
+  // method will run in background to load the data.
+  loadMoreData() {
+    this.IntervalId = setInterval(() => {
+      this.callApi().then((res) => {
+        if (res == false) {
+          clearInterval(this.IntervalId);
+        }
+        else if (res == "error") {
+          this.handleError()
+        }
+      }).catch(err => {
+        err == 'error' && this.handleError();
+      })
+    }, 2000)
+  }
+
+  // function to handle errors in fetching the data.
+  handleError() {
+    clearInterval(this.IntervalId);
+    setTimeout(() => {
+      this.loadMoreData();
+    }, 8000)
+  }
+  async callApi() {
+    this.APIURL = `https://3qpzs5oekf.execute-api.us-east-1.amazonaws.com/dev/user/col-data/${this.collectionId}?limit=${this.cardstoLoad}&offset=${this.cardstoLoadOffset}`;
+    try {
+      // setting up Params to send with API.
+      let options = {
+        method: "GET",
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+      
+      // calling the API.
+      const res = await fetch(this.APIURL, options);
+      if (!res.ok) return "error";
+      if (res.status >= 400) return "error";
+      const resData = await res.json();
+      if (resData.data.length == 0) return false;
+      resData.data != undefined && resData.data.length != 0 && (this.info = [...this.info, ...resData.data]);
+      this.cardstoLoadOffset += this.cardstoLoad;
+      console.log(this.info)
+    }
+    catch (err) { return "error" }
+  }
+
 
   activateEventListeners() {
     this.btn.addEventListener("click", () => {
       this.loadMoreFunc();
-      this.scrollToSection(this.container);
     });
-  }
-
-  // function to filter cards.
-  renderCards(cardsArr) {
-    this.addCard(cardsArr);
   }
 
   // filter the cards using tags and resources.
@@ -98,23 +154,24 @@ class RESOURCESCARD {
       clonedCard.querySelector("[data-desc='carddesc']").innerHTML =
         info.description;
       // code to trigger video modal.
-      info.video
+      info.videolink
         ? clonedCard
           .querySelector("[data-img='cardimg']")
-          .setAttribute("data-src", this.filterSrc(info.video))
+          .setAttribute("data-src", this.filterSrc(info.videolink))
         : "";
-      info.video
+      info.videolink
         ? clonedCard
           .querySelector("[data-img='cardimg']")
           .addEventListener("click", this.openModalAddvideo.bind(this))
         : "";
-      info.video
+      info.videolink
         ? clonedCard
           .querySelector("[data-src='videoSrc']")
-          .setAttribute("data-src", this.filterSrc(info.video))
+          .setAttribute("data-src", this.filterSrc(info.videolink))
         : "";
-      !(info.video)
-        ? (clonedCard.querySelector("[data-link='cardlink']").href = `https://slintel-style-guide-bcd18fe5ee6c2c8b7e4.webflow.io/ebook-collection/${info.slug}`)
+      !(info.videolink)
+        // need to change before integrating into the main page.
+        ? (clonedCard.querySelector("[data-link='cardlink']").href = `/${this.pageSlug}/${info.slug}`)
         : clonedCard
           .querySelector("[data-link='cardlink']")
           .addEventListener("click", this.openModalAddvideo.bind(this));
@@ -146,7 +203,7 @@ class RESOURCESCARD {
     ];
     this.currentIndex = this.sliceUpto;
     this.sliceUpto += this.incerementBy;
-    this.renderCards(this.newArrFromInfo);
+    this.addCard(this.newArrFromInfo);
   }
 
   // function to hide and show buttons.
@@ -173,7 +230,7 @@ class RESOURCESCARD {
     let elDistanceToTop =
       window.pageYOffset + section.getBoundingClientRect().top;
     window.scrollTo({
-      top: elDistanceToTop - 200,
+      top: elDistanceToTop - 125,
       behavior: "smooth",
     });
   }
@@ -188,10 +245,10 @@ class RESOURCESCARD {
   // function to connect video modal into banner.
   addModalToBanner() {
     let imgEle = this.img.querySelector("[data-img='cardimg']")
-    let src = imgEle?imgEle.getAttribute("data-src"):null;
+    let src = imgEle ? imgEle.getAttribute("data-src") : null;
     let linkEle = this.img.querySelector("[data-link='cardlink']");
-    let downloadLink = linkEle?linkEle.getAttribute("data-src"):null;
-    if (src && downloadLink) {
+    let downloadLink = linkEle ? linkEle.getAttribute("data-src") : null;
+    if (src && (!src.startsWith("https://www.youtube.com/")) && downloadLink) {
       let videoLink = this.filterSrc(src);
       imgEle.setAttribute("data-src", videoLink)
       linkEle.setAttribute("data-src", videoLink)
@@ -204,33 +261,39 @@ class RESOURCESCARD {
 
 const RESOURCES = [
   {
-    resource: EBOOK,
+    slug: "ebook-collection",
+    collectionId: "617bb2521a4c4c1986197aee",
     container: document.querySelector("[data-resource='ebook']"),
     btn: document.querySelector("[data-btn='loadMoreEbook']"),
-    cardsToShow: 1,
+    cardsToShow: 4,
     bannerImgIndex: 4,
   },
   {
-    resource: CASESTUDIES,
+    slug: "case-studies",
+    collectionId: "617bb357676d902dccb78dec",
     container: document.querySelector("[data-resource='case-studies']"),
     btn: document.querySelector("[data-btn='loadMoreCaseStudies']"),
-    cardsToShow: 2,
+    cardsToShow: 4,
     bannerImgIndex: 3,
     modal: document.querySelector(".reso-video-popup-wrapper"),
     video: document.querySelector("[data-video='video']"),
     closeBtn: document.querySelector(".reso-popup-close-btn"),
   },
   {
-    resource: WEBINAR,
+    resource: [],
+    // this needs to be changed.
+    slug:"case-studies",
+    collectionId: "617bb444b5299b89b97e0ae9",
     container: document.querySelector("[data-resource='webinar']"),
     btn: document.querySelector("[data-btn='loadMoreWebinar']"),
-    cardsToShow: 2,
+    cardsToShow: 4,
   },
   {
-    resource: VIDEO,
+    resource: [],
+    collectionId: "617bb50855f22d39aadac6dd",
     container: document.querySelector("[data-resource='video']"),
     btn: document.querySelector("[data-btn='loadMoreVideo']"),
-    cardsToShow: 2,
+    cardsToShow: 4,
     modal: document.querySelector(".reso-video-popup-wrapper"),
     video: document.querySelector("[data-video='video']"),
     closeBtn: document.querySelector(".reso-popup-close-btn"),
@@ -338,19 +401,9 @@ class FILTERRESOURCES {
         let name = e.currentTarget.dataset.name;
         let section;
         this.resourceCardContainer.includes(name) ? section = document.querySelector(`[data-container='${name}']`) : section = document.querySelector("[data-container='ebook']");
-        section ? this.scrollToSection(section) : "";
+        section ? this.resourcesObj[0].scrollToSection(section) : "";
       })
     })
-  }
-
-  // function to scroll to top of the section when user clicks in show more\
-  scrollToSection(section) {
-    let elDistanceToTop =
-      window.pageYOffset + section.getBoundingClientRect().top;
-    window.scrollTo({
-      top: elDistanceToTop - 100,
-      behavior: "smooth",
-    });
   }
 
   removeActive(name) {
