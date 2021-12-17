@@ -23,29 +23,26 @@ class RESOURCESCARD {
     this.showBanner = true;
     this.init();
   }
-
   init() {
     this.container.innerHTML = "";
     this.loadDataFromApi();
   }
-
   // a method that takes data from the cdn and add it into the empty array -> loadmore -> listeners.
   loadDataFromApi() {
-    console.log("initial call")
+    // console.log("initial call")
     let promise = this.callApi();
     promise.then((res) => {
-      if(res == 'error'){
-        setTimeout(() => this.loadDataFromApi(),8000);
-      }else{
+      if (res == 'error') {
+        setTimeout(() => this.loadDataFromApi(), 8000);
+      } else {
         this.loadMoreFunc();
         this.activateEventListeners();
         this.loadMoreData();
       }
     }).catch(() => {
-      setTimeout(() => this.loadDataFromApi(),8000);
+      setTimeout(() => this.loadDataFromApi(), 8000);
     })
   }
-
   // method will run in background to load the data.
   loadMoreData() {
     this.IntervalId = setInterval(() => {
@@ -61,7 +58,6 @@ class RESOURCESCARD {
       })
     }, 2000)
   }
-
   // function to handle errors in fetching the data.
   handleError() {
     clearInterval(this.IntervalId);
@@ -79,7 +75,6 @@ class RESOURCESCARD {
           'Content-type': 'application/json',
         },
       }
-      
       // calling the API.
       const res = await fetch(this.APIURL, options);
       if (!res.ok) return "error";
@@ -88,52 +83,43 @@ class RESOURCESCARD {
       if (resData.data.length == 0) return false;
       resData.data != undefined && resData.data.length != 0 && (this.info = [...this.info, ...resData.data]);
       this.cardstoLoadOffset += this.cardstoLoad;
-      console.log(this.info)
+      // console.log(this.info)
     }
     catch (err) { return "error" }
   }
-
-
   activateEventListeners() {
     this.btn.addEventListener("click", () => {
       this.loadMoreFunc();
     });
   }
-
   // filter the cards using tags and resources.
   filterCards(tags, checkboxs, showBanner) {
     this.showBanner = showBanner;
     this.container.innerHTML = "";
     // return cards arr -> render cards.
     const CARDARR = [];
-
     this.clonedData = this.info.filter((data) => {
       const foundResource = data.resources.find((res) => {
         return checkboxs.includes(res.slug) && !CARDARR.includes(data)
           ? CARDARR.push(data)
           : false;
       });
-
       const foundTags = data.tags.find((tag) => {
         return tags.includes(tag.slug) && !CARDARR.includes(data)
           ? CARDARR.push(data)
           : false;
       });
-
-
       if (foundResource || foundTags) {
         return true;
       }
       return false;
     });
-
     this.clonedData = [...CARDARR];
     this.newArrFromInfo = [];
     this.currentIndex = 0;
     this.sliceUpto = this.cardsToShow;
     this.loadMoreFunc();
   }
-
   // function to loop through the data, clone card, change data of the cloned card, add them into DOM.
   addCard(data) {
     // looping data.
@@ -184,6 +170,7 @@ class RESOURCESCARD {
           .querySelector("[data-tagwrp='tagswrp']")
           .appendChild(cloneTag);
       });
+      // console.log(clonedCard)
       this.container.appendChild(clonedCard);
       // adding card into container.
       if (this.container.childElementCount == this.imgIndex && this.img && this.showBanner) {
@@ -194,7 +181,7 @@ class RESOURCESCARD {
     });
     this.hideShowMoreBtn(this.currentIndex, this.btn);
   }
-
+  // function to load cards.
   loadMoreFunc() {
     this.newArrFromInfo = [
       ...(this.clonedData.length > 0
@@ -205,7 +192,6 @@ class RESOURCESCARD {
     this.sliceUpto += this.incerementBy;
     this.addCard(this.newArrFromInfo);
   }
-
   // function to hide and show buttons.
   hideShowMoreBtn(length, btn) {
     if (this.clonedData.length != 0) {
@@ -215,7 +201,6 @@ class RESOURCESCARD {
       length >= this.info.length ? (btn.style.display = "none") : (btn.style.display = "block");
     }
   }
-
   // open modal and append video link.
   openModalAddvideo(ev) {
     this.video.src = ev.currentTarget.getAttribute("data-src");
@@ -224,7 +209,6 @@ class RESOURCESCARD {
       this.video.src = "";
     });
   }
-
   // function to scroll to top of the section when user clicks in show more\
   scrollToSection(section) {
     let elDistanceToTop =
@@ -234,14 +218,12 @@ class RESOURCESCARD {
       behavior: "smooth",
     });
   }
-
   // fucntion to filter out src from video string
   filterSrc(str) {
     let re = /<iframe[^>]+src="([^">]+)/g;
     let results = re.exec(str);
     return results[1];
   }
-
   // function to connect video modal into banner.
   addModalToBanner() {
     let imgEle = this.img.querySelector("[data-img='cardimg']")
@@ -258,7 +240,6 @@ class RESOURCESCARD {
     }
   }
 }
-
 const RESOURCES = [
   {
     slug: "ebook-collection",
@@ -275,33 +256,27 @@ const RESOURCES = [
     btn: document.querySelector("[data-btn='loadMoreCaseStudies']"),
     cardsToShow: 4,
     bannerImgIndex: 3,
-    modal: document.querySelector(".reso-video-popup-wrapper"),
     video: document.querySelector("[data-video='video']"),
     closeBtn: document.querySelector(".reso-popup-close-btn"),
   },
   {
-    resource: [],
-    // this needs to be changed.
-    slug:"case-studies",
+    slug: "webinars-collection",
     collectionId: "617bb444b5299b89b97e0ae9",
     container: document.querySelector("[data-resource='webinar']"),
     btn: document.querySelector("[data-btn='loadMoreWebinar']"),
     cardsToShow: 4,
   },
   {
-    resource: [],
     collectionId: "617bb50855f22d39aadac6dd",
     container: document.querySelector("[data-resource='video']"),
     btn: document.querySelector("[data-btn='loadMoreVideo']"),
     cardsToShow: 4,
-    modal: document.querySelector(".reso-video-popup-wrapper"),
+    modal: document.querySelector("[data-modal='video-modal']"),
     video: document.querySelector("[data-video='video']"),
-    closeBtn: document.querySelector(".reso-popup-close-btn"),
+    closeBtn: document.querySelector("[data-btn='close-btn']"),
   },
 ];
-
 /* code for filter starts from here*/
-
 class FILTERRESOURCES {
   constructor(resource) {
     this.resourcesCheckBox = document.querySelectorAll(
@@ -309,9 +284,14 @@ class FILTERRESOURCES {
     );
     this.tagsContainer = document.querySelectorAll("[data-input='tags']");
     this.applyBtn = document.querySelector(".apply-button");
+    this.downArrowBtn = document.querySelector("[data-btn='downArrow']");
+    this.filterCloseBtn = document.querySelector("[data-btn='filterClose']");
+    this.clearAllTagResource = document.querySelector("[data-btn='allclearResource']");
     this.resetResourceBtn = document.querySelector("[data-btn='clearResource']");
     this.resetTagBtn = document.querySelector("[data-btn='clearTag']");
     this.topCategory = document.querySelectorAll(".resources-category-title");
+    this.topCategoryWrapper = document.querySelector('.reso-fil-cat-wrap');
+    this.filterClearBtnWrapper = document.querySelector('.filter-and-clearall-wrap');
     this.resourceCardContainer = [];
     this.filterBtn = document.querySelector(".filter-btn");
     this.checkboxArr = [];
@@ -321,7 +301,6 @@ class FILTERRESOURCES {
     this.allResourcesBtn = document.querySelector("[data-name='allResource']");
     this.init();
   }
-
   // send resources to add cards into DOM.
   init() {
     this.resourcesObj = this.resourceArr.map(
@@ -334,9 +313,9 @@ class FILTERRESOURCES {
     this.filterListener();
     this.observeScroll(this.allResourcesBtn);
   }
-
   // function add listener to the checkbox, tags and apply btn -> data to class to filter the cards.
   filterListener() {
+    // add listener to the checkbox
     this.resourcesCheckBox.forEach((resource) => {
       resource.addEventListener("change", (e) => {
         // if checked add value otherwise remove;
@@ -349,7 +328,7 @@ class FILTERRESOURCES {
         }
       });
     });
-
+    // listener for all tags.
     this.tagsContainer.forEach((tag) => {
       tag.addEventListener("click", (e) => {
         let data = e.currentTarget;
@@ -363,39 +342,27 @@ class FILTERRESOURCES {
         }
       });
     });
-
+    //click on apply filter button.
     this.applyBtn.addEventListener("click", () => {
-      this.filterBtn.click();
-      this.tagsArr.length != 0 || this.checkboxArr.length != 0 ? this.showBanner = false : this.showBanner = true;
-      this.resourcesObj.forEach((resObj) => {
-        resObj.filterCards(this.tagsArr, this.checkboxArr, this.showBanner);
-      });
+      this.applyFilters(true);
+      this.showAndHideClearBtn()
     });
-
     // listener to reset checkebox.
     this.resetResourceBtn.addEventListener("click", () => {
-      this.checkboxArr = [];
-      this.resourcesCheckBox.forEach(res => {
-        if (res.checked) {
-          res.checked = false;
-          res.previousElementSibling.classList.remove("w--redirected-checked");
-        }
-      })
-
+      // clears only checkboxes.
+      this.clearAllFilter(false, true);
     })
-
     // listener to reset tags.
     this.resetTagBtn.addEventListener('click', () => {
-      this.tagsArr = [];
-      this.tagsContainer.forEach(tag => tag.classList.remove("active"))
+      // clears all tags.
+      this.clearAllFilter(true, false);
     })
-
-    // top category on click listener.
+    // top category observer listener.
     this.resourceArr.forEach(reso => {
       this.observeScroll(reso.container.parentElement);
       this.resourceCardContainer.push(reso.container.parentElement.dataset.container);
     })
-
+    // top category on click listener.
     this.topCategory.forEach(category => {
       category.addEventListener('click', (e) => {
         let name = e.currentTarget.dataset.name;
@@ -404,24 +371,84 @@ class FILTERRESOURCES {
         section ? this.resourcesObj[0].scrollToSection(section) : "";
       })
     })
+    // when down arrow button is pressed on mobile screem.
+    this.downArrowBtn.addEventListener('click', () => {
+      !(this.topCategoryWrapper.classList.contains('active')) ? this.topCategoryWrapper.classList.add("active") : this.topCategoryWrapper.classList.remove("active");
+      (this.filterClearBtnWrapper.style.display == "" || this.filterClearBtnWrapper.style.display == "flex") ? this.filterClearBtnWrapper.style.display = 'none' : this.filterClearBtnWrapper.style.display = 'flex';
+    });
+    // listener to close the filter window when user clicks in the x icon.
+    this.filterCloseBtn.addEventListener('click', () => {
+      this.showAndHideClearBtn()
+      this.filterBtn.click();
+      //here run the function to check the clearall button to show or not.
+    })
+    // listener for clear all button that is present outside of filter.
+    this.clearAllTagResource.addEventListener('click', () => {
+      // clears all the selected filters -> hide the clearall button -> click on apply button to load default cards.
+      this.clearAllFilter(true, true);
+      this.showAndHideClearBtn();
+      this.applyFilters(false);
+    })
+    // listener to add shadow into the container when user click on the filter btn.
+    this.filterBtn.addEventListener('click', () => {
+      let container = document.querySelector(".main-resources-wrapper");
+      container.classList.contains("active-box-shadow") ? container.classList.remove("active-box-shadow") : container.classList.add("active-box-shadow");
+    })
   }
-
+  // function to apply filters
+  applyFilters(apply) {
+    // click on clear all filters then it won't click on filter button to close filter.
+    apply && this.filterBtn.click();
+    this.tagsArr.length != 0 || this.checkboxArr.length != 0 ? this.showBanner = false : this.showBanner = true;
+    this.resourcesObj.forEach((resObj) => {
+      resObj.filterCards(this.tagsArr, this.checkboxArr, this.showBanner);
+    });
+  }
+  //this will add or remove the active class in top categories.
   removeActive(name) {
     this.topCategory.forEach(category => {
       !(category.classList.contains("active")) && category.dataset.name == name.dataset.container || category.dataset.name == name.dataset.name ? category.classList.add("active") : category.classList.remove("active");
     })
   }
-
   // function for observing scroll.
   observeScroll(wrapper) {
     this.observer = new IntersectionObserver((wrapper) => {
       if (wrapper[0]['isIntersecting'] == true) {
         let elID = wrapper[0].target;
         this.removeActive(elID);
+        window.screen.width < 768 && this.updateCategory(elID)
       }
     }, { root: null, threshold: 0, rootMargin: '-100px' });
     this.observer.observe(wrapper);
   }
+  // function to update the elements on moblie view.
+  updateCategory(element) {
+    let elementNode = document.querySelector(`[data-name='${element.dataset.container}']`);
+    elementNode != null && this.topCategory[0].parentElement.insertBefore(elementNode, elementNode.parentElement.firstElementChild);
+  }
+  // function to make clearAll button visible or hide.
+  showAndHideClearBtn() {
+    if (window.screen.width < 768) {
+      (this.tagsArr.length > 0 || this.checkboxArr.length > 0) ? this.clearAllTagResource.style.display = "block" : this.clearAllTagResource.style.display = 'none';
+    }
+  }
+  // clear filter function.
+  clearAllFilter(tags, checkboxes) {
+    if (tags) {
+      // clear all tags.
+      this.tagsArr = [];
+      this.tagsContainer.forEach(tag => tag.classList.remove("active"));
+    }
+    if (checkboxes) {
+      // clear all check box.
+      this.checkboxArr = [];
+      this.resourcesCheckBox.forEach(res => {
+        if (res.checked) {
+          res.checked = false;
+          res.previousElementSibling.classList.remove("w--redirected-checked");
+        }
+      });
+    }
+  }
 }
-
 new FILTERRESOURCES(RESOURCES);
