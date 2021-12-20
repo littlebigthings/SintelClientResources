@@ -370,6 +370,8 @@ class FILTERRESOURCES {
         let section;
         this.resourceCardContainer.includes(name) ? section = document.querySelector(`[data-container='${name}']`) : section = document.querySelector("[data-container='ebook']");
         section ? this.resourcesObj[0].scrollToSection(section) : "";
+        // close the dropdown when a category is selected.
+        window.screen.width < 768 && this.downArrowBtn.click();
       })
     })
     // when down arrow button is pressed on mobile screem.
