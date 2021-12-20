@@ -256,6 +256,7 @@ const RESOURCES = [
     btn: document.querySelector("[data-btn='loadMoreCaseStudies']"),
     cardsToShow: 4,
     bannerImgIndex: 3,
+    modal: document.querySelector("[data-modal='video-modal']"),
     video: document.querySelector("[data-video='video']"),
     closeBtn: document.querySelector(".reso-popup-close-btn"),
   },
