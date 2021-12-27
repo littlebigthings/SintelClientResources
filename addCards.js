@@ -418,8 +418,16 @@ class FILTERRESOURCES {
     this.observer = new IntersectionObserver((wrapper) => {
       if (wrapper[0]['isIntersecting'] == true) {
         let elID = wrapper[0].target;
-        this.removeActive(elID);
-        window.screen.width < 768 && this.updateCategory(elID)
+        // ignore the allResources
+        if(window.screen.width < 768 && elID.dataset.name != "allResource"){
+          this.updateCategory(elID);
+          this.removeActive(elID);
+        }
+        else if (window.screen.width > 768){
+          this.removeActive(elID);
+        }
+        // this.removeActive(elID);
+        // window.screen.width < 768 && this.updateCategory(elID)
       }
     }, { root: null, threshold: 0, rootMargin: '-100px' });
     this.observer.observe(wrapper);
