@@ -5,7 +5,7 @@ const BLOGRESOURCE = [
         author: "author",
         collectionId: "61a9be8945247b9091e89a0f",
         btn: document.querySelector("[data-btn='load-more']"),
-        postToShow: 10,
+        postToShow: 6,
         tags: document.querySelectorAll("[data-category]"),
         postContainer: document.querySelector("[data-blog-wrapper='blog-wrapper']"),
         postCard: document.querySelector("[data-card='blog-card']"),
@@ -65,6 +65,7 @@ class BLOGCARD {
     constructor(resource) {
         this.apiData = [];
         this.newArrFromInfo = [];
+        this.clonedData = [];
         this.collectionId = resource.collectionId;
         this.slug = resource.slug;
         this.author = resource.author;
@@ -72,7 +73,7 @@ class BLOGCARD {
         this.blogPostContainer = resource.postContainer;
         this.card = resource.postCard.cloneNode(true);
         this.cardsToShow = resource.postToShow;
-        this.cardsToLoad = 4;
+        this.cardsToLoad = 20;
         this.cardsToLoadOffSet = 0;
         this.currentIndex = 0;
         this.sliceUpto = resource.postToShow;
@@ -98,6 +99,11 @@ class BLOGCARD {
                 this.activateEventListeners();
                 this.loadMoreData();
             }
+            // else{
+            //     this.loadMoreFunc();
+            //     this.activateEventListeners();
+            //     this.loadMoreData();
+            // }
         }).catch(() => {
             setTimeout(() => this.loadDataFromApi(), 8000);
         })
@@ -150,14 +156,6 @@ class BLOGCARD {
         catch (err) { return "error" }
     }
 
-    // function to load cards.
-    loadMoreFunc() {
-        this.newArrFromInfo = this.apiData.slice(this.currentIndex, this.sliceUpto);
-        this.currentIndex = this.sliceUpto;
-        this.sliceUpto += this.incerementBy;
-        this.addCard(this.newArrFromInfo);
-    }
-
     // function to loop through the data, clone card, change data of the cloned card, add them into DOM.
     addCard(data) {
         // looping data.
@@ -182,7 +180,17 @@ class BLOGCARD {
         });
         this.hideShowMoreBtn(this.currentIndex, this.btn);
     }
-
+    // function to load cards.
+    loadMoreFunc() {
+        this.newArrFromInfo = [
+            ...(this.clonedData.length > 0
+                ? this.clonedData.slice(this.currentIndex, this.sliceUpto)
+                : this.apiData.slice(this.currentIndex, this.sliceUpto)),
+        ];
+        this.currentIndex = this.sliceUpto;
+        this.sliceUpto += this.incerementBy;
+        this.addCard(this.newArrFromInfo);
+    }
     // function to hide and show buttons.
     hideShowMoreBtn(length, btn) {
         if (this.clonedData.length != 0) {
@@ -197,6 +205,29 @@ class BLOGCARD {
         this.btn.addEventListener("click", () => {
             this.loadMoreFunc();
         });
+    }
+
+    // filter the cards using tags and resources.
+    filterCards(tags) {
+        this.blogPostContainer.innerHTML = "";
+        // return cards arr -> render cards.
+        const CARDARR = [];
+        this.clonedData = this.apiData.filter((data) => {
+            const foundTags = data["blog-post-category"].find((tag) => {
+                return tags.includes(tag.slug) && !CARDARR.includes(data)
+                    ? CARDARR.push(data)
+                    : false;
+            });
+            if (foundTags) {
+                return true;
+            }
+            return false;
+        });
+        this.clonedData = [...CARDARR];
+        this.newArrFromInfo = [];
+        this.currentIndex = 0;
+        this.sliceUpto = this.cardsToShow;
+        this.loadMoreFunc();
     }
 }
 
