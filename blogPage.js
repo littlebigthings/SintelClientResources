@@ -99,11 +99,7 @@ class BLOGCARD {
                 this.activateEventListeners();
                 this.loadMoreData();
             }
-            // else{
-            //     this.loadMoreFunc();
-            //     this.activateEventListeners();
-            //     this.loadMoreData();
-            // }
+            
         }).catch(() => {
             setTimeout(() => this.loadDataFromApi(), 8000);
         })
