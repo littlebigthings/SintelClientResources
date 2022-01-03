@@ -98,8 +98,9 @@ class BLOGCARD {
                 this.loadMoreFunc();
                 this.activateEventListeners();
                 this.loadMoreData();
+                this.search();
             }
-            
+
         }).catch(() => {
             setTimeout(() => this.loadDataFromApi(), 8000);
         })
@@ -224,6 +225,12 @@ class BLOGCARD {
         this.currentIndex = 0;
         this.sliceUpto = this.cardsToShow;
         this.loadMoreFunc();
+    }
+    // function to add search.
+    search() {
+        var searchList = new List('list-item', {
+            valueNames: ['name', 'summary', 'author-name'],
+        })
     }
 }
 
