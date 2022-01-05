@@ -31,7 +31,7 @@ function addListener() {
             })
         })
         // for default language selection.
-        language.dataset.lang == "english" && language.click();
+        language.dataset.lang == "en" && language.click();
     })
 }
 
