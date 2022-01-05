@@ -4,7 +4,7 @@ const arrows = document.querySelectorAll(".dropdown-arrow");
 function rotateArrow(){
     toggleBtns.forEach(toggle => {
         toggle.addEventListener("click", (eve) => {
-            let clickedEle = eve.target.querySelector(".dropdown-arrow");
+            let clickedEle = eve.currentTarget.querySelector(".dropdown-arrow");
             arrows.forEach(arrow => {
                 if(arrow != clickedEle){
                 arrow.classList.contains("up-down") && arrow.classList.remove("up-down");
