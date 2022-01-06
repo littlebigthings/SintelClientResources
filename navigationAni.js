@@ -14,7 +14,7 @@ class NAVIGATIONANI{
     }
 
     init(){
-        this.startListener();
+        !(this.navigationMenu.classList.contains("white-navbar"))&&this.startListener();
     }
 
     // function listen to window scroll -> animate the navigation menu.
