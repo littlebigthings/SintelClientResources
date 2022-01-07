@@ -205,8 +205,10 @@ class RESOURCESCARD {
   openModalAddvideo(ev) {
     this.video.src = ev.currentTarget.getAttribute("data-src");
     this.modal.style.display = "flex";
+    document.body.classList.add("not-scroll");
     this.closeBtn.addEventListener("click", () => {
       this.video.src = "";
+      document.body.classList.remove("not-scroll");
     });
   }
   // function to scroll to top of the section when user clicks in show more\
