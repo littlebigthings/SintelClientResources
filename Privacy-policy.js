@@ -1,4 +1,3 @@
-
 var resizeTimer;
 var tableContent;
 function isInViewportCenter(element) {
@@ -23,11 +22,46 @@ function activateCategory(id) {
     })
 }
 $(window).on("scroll", function () {
-        [...$(".content-wrapper h2")].forEach((ele) => {
-            if (isInViewportCenter(ele)) {
-                if ( ele.getBoundingClientRect().top >= 0 && ele.getBoundingClientRect().top <= 200 ) {
-                    activateCategory(ele.id)
-                }
+    [...$(".content-wrapper h2")].forEach((ele) => {
+        if (isInViewportCenter(ele)) {
+            if (ele.getBoundingClientRect().top >= 0 && ele.getBoundingClientRect().top <= 200) {
+                activateCategory(ele.id)
             }
-        });
+        }
+    });
 });
+
+function convertToSlug(Text) {
+    return Text.toLowerCase()
+        .replace(/[^\w ]+/g, "")
+        .replace(/ +/g, "-");
+}
+function getAndSetTableContents(eleBlock, tableEle) {
+    const tableChild = $(tableEle).children().eq(0);
+    $(tableEle).empty();
+    $(eleBlock)
+        .find("h2")
+        .each(function () {
+            const headingTitle = $(this).text();
+            const slugifyedText = convertToSlug(headingTitle);
+            $(this).attr("id", slugifyedText);
+            $(tableEle).append(
+                tableChild.clone(true).text(headingTitle).attr("data-id", slugifyedText)
+            );
+        });
+    $(".table-of-content")
+        .children()
+        .on("click", function () {
+            let id = $(this).data("id");
+            scrollFromTop(id);
+        });
+}
+function scrollFromTop(id) {
+    let el = document.getElementById(id);
+    let elDistanceToTop = window.pageYOffset + el.getBoundingClientRect().top;
+    window.scrollTo({
+        top: elDistanceToTop - (window.screen.width > 992 ? 80 : 20),
+        behavior: "smooth",
+    });
+}
+getAndSetTableContents($(".content-wrapper"), $(".table-of-content"));
