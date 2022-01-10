@@ -21,7 +21,7 @@ class RESOURCESCARD {
     this.closeBtn = config.closeBtn;
     this.imgIndex = config.bannerImgIndex;
     this.showBanner = true;
-    this.bannerVideoLink = videoLink;
+    this.bannerVideoLink = document.querySelector("[data-video]").dataset.video;
     this.init();
   }
   init() {
