@@ -21,6 +21,7 @@ class RESOURCESCARD {
     this.closeBtn = config.closeBtn;
     this.imgIndex = config.bannerImgIndex;
     this.showBanner = true;
+    this.bannerVideoLink = videoLink;
     this.init();
   }
   init() {
@@ -229,8 +230,10 @@ class RESOURCESCARD {
   // function to connect video modal into banner.
   addModalToBanner() {
     let imgEle = this.img.querySelector("[data-img='cardimg']")
+    imgEle.setAttribute("data-src", this.bannerVideoLink);
     let src = imgEle ? imgEle.getAttribute("data-src") : null;
     let linkEle = this.img.querySelector("[data-link='cardlink']");
+    linkEle.setAttribute("data-src", this.bannerVideoLink)
     let downloadLink = linkEle ? linkEle.getAttribute("data-src") : null;
     if (src && (!src.startsWith("https://www.youtube.com/")) && downloadLink) {
       let videoLink = this.filterSrc(src);
