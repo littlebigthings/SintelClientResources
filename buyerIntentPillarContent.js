@@ -62,7 +62,7 @@ function getAndSetTableContents(eleBlock, tableEle) {
 
 //function to set the id and data-attribute into chapter contents
 function getAndSetChapterContents(eleBlock, tableEle) {
-    const slugifyedText = convertToSlug(tableEle.querySelector(".pillar-card-tag").innerHTML);
+    const slugifyedText = tableEle.querySelectorAll(".display-inline-block")[1].innerHTML;
     tableEle.setAttribute("data-id", slugifyedText);
     eleBlock.setAttribute("id", slugifyedText);
     tableEle.addEventListener('click', (event) => {
