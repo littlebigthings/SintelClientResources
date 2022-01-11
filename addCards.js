@@ -35,7 +35,7 @@ class RESOURCESCARD {
     promise.then((res) => {
       if (res == 'error') {
         setTimeout(() => this.loadDataFromApi(), 8000);
-      } else {
+      } else if (res != false){
         this.loadMoreFunc();
         this.activateEventListeners();
         this.loadMoreData();
@@ -82,12 +82,26 @@ class RESOURCESCARD {
       if (res.status >= 400) return "error";
       const resData = await res.json();
       if (resData.data.length == 0) return false;
-      resData.data != undefined && resData.data.length != 0 && (this.info = [...this.info, ...resData.data]);
+      // resData.data != undefined && resData.data.length != 0 && (this.info = [...this.info, ...resData.data]);
+      resData.data != undefined && resData.data.length != 0 && (this.info = [...this.info, ...this.sortApiData(resData.data)]);
       this.cardstoLoadOffset += this.cardstoLoad;
-      // console.log(this.info)
     }
     catch (err) { return "error" }
   }
+
+  // function to sort the data based on order.
+  sortApiData(data){
+    data.sort((infoOne, infoTwo) => { 
+      if(infoOne.order){
+        return infoOne.order - infoTwo.order 
+      }
+      else if(infoOne['episode-number']){
+        return infoOne['episode-number'] - infoTwo['episode-number']
+      }
+    })
+    return data;
+  }
+
   activateEventListeners() {
     this.btn.addEventListener("click", () => {
       this.loadMoreFunc();
@@ -216,8 +230,9 @@ class RESOURCESCARD {
   scrollToSection(section) {
     let elDistanceToTop =
       window.pageYOffset + section.getBoundingClientRect().top;
+    let topDistance = window.screen.width >= 768 ? 150 : 360;
     window.scrollTo({
-      top: elDistanceToTop - 125,
+      top: elDistanceToTop - topDistance,
       behavior: "smooth",
     });
   }
@@ -230,10 +245,10 @@ class RESOURCESCARD {
   // function to connect video modal into banner.
   addModalToBanner() {
     let imgEle = this.img.querySelector("[data-img='cardimg']")
-    imgEle.setAttribute("data-src", this.bannerVideoLink);
+    imgEle && imgEle.setAttribute("data-src", this.bannerVideoLink);
     let src = imgEle ? imgEle.getAttribute("data-src") : null;
     let linkEle = this.img.querySelector("[data-link='cardlink']");
-    linkEle.setAttribute("data-src", this.bannerVideoLink)
+    linkEle && linkEle.setAttribute("data-src", this.bannerVideoLink)
     let downloadLink = linkEle ? linkEle.getAttribute("data-src") : null;
     if (src && (!src.startsWith("https://www.youtube.com/")) && downloadLink) {
       let videoLink = this.filterSrc(src);
@@ -428,7 +443,7 @@ class FILTERRESOURCES {
           this.updateCategory(elID);
           this.removeActive(elID);
         }
-        else if (window.screen.width > 768){
+        else if (window.screen.width >= 768){
           this.removeActive(elID);
         }
         // this.removeActive(elID);
