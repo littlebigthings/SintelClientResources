@@ -230,7 +230,7 @@ class RESOURCESCARD {
   scrollToSection(section) {
     let elDistanceToTop =
       window.pageYOffset + section.getBoundingClientRect().top;
-    let topDistance = window.screen.width >= 768 ? 150 : 360;
+    let topDistance = window.screen.width >= 768 ? 155 : 135;
     window.scrollTo({
       top: elDistanceToTop - topDistance,
       behavior: "smooth",
@@ -388,10 +388,10 @@ class FILTERRESOURCES {
       category.addEventListener('click', (e) => {
         let name = e.currentTarget.dataset.name;
         let section;
+        // close the dropdown when a category is selected.
+        (window.screen.width < 768 && this.topCategoryWrapper.classList.contains("active")) && this.downArrowBtn.click();
         this.resourceCardContainer.includes(name) ? section = document.querySelector(`[data-container='${name}']`) : section = document.querySelector("[data-container='ebook']");
         section ? this.resourcesObj[0].scrollToSection(section) : "";
-        // close the dropdown when a category is selected.
-        window.screen.width < 768 && this.downArrowBtn.click();
       })
     })
     // when down arrow button is pressed on mobile screem.
@@ -414,6 +414,8 @@ class FILTERRESOURCES {
     })
     // listener to add shadow into the container when user click on the filter btn.
     this.filterBtn.addEventListener('click', () => {
+      // to stop page scroll when filter is open in mobile view.
+      window.screen.width < 768 && document.body.classList.toggle("not-scroll");
       let container = document.querySelector(".main-resources-wrapper");
       container.classList.contains("active-box-shadow") ? container.classList.remove("active-box-shadow") : container.classList.add("active-box-shadow");
     })
